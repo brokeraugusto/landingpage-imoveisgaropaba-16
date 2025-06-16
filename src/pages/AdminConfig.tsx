@@ -8,58 +8,81 @@ import LeadDashboard from '@/components/LeadDashboard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useSettings } from '@/hooks/useSettings';
+import { useSupabaseSettings } from '@/hooks/useSupabaseSettings';
 import { Settings, MessageCircle, BarChart3, Users, Webhook, Activity } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 
 const AdminConfig = () => {
-  const { settings, updateSettings } = useSettings();
-  const [trackingSettings, setTrackingSettings] = useState(settings.tracking);
+  const { settings, isLoading, updateSettings } = useSupabaseSettings();
+  const [trackingSettings, setTrackingSettings] = useState(settings?.tracking || {});
+  const [isSaving, setIsSaving] = useState(false);
 
-  const handleSaveTracking = () => {
-    const success = updateSettings({ tracking: trackingSettings });
-    if (success) {
+  const handleSaveTracking = async () => {
+    if (!settings) return;
+    
+    setIsSaving(true);
+    try {
+      await updateSettings.mutateAsync({ tracking: trackingSettings });
       toast({
         title: "Configurações salvas",
         description: "Analytics configurado com sucesso",
       });
+    } catch (error) {
+      toast({
+        title: "Erro ao salvar",
+        description: "Verifique os dados e tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Carregando configurações...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-50 py-4 md:py-8">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">Sistema de Gestão Imobiliária</h1>
-            <p className="text-gray-600">Dashboard completo com automações, leads e integrações</p>
+          <div className="text-center mb-6 md:mb-8">
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">Sistema de Gestão Imobiliária</h1>
+            <p className="text-gray-600 text-sm md:text-base">Dashboard completo com automações, leads e integrações</p>
           </div>
 
-          <Tabs defaultValue="leads" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-6">
-              <TabsTrigger value="leads" className="flex items-center gap-2">
-                <Users className="h-4 w-4" />
-                Leads
+          <Tabs defaultValue="leads" className="space-y-4 md:space-y-6">
+            <TabsList className="grid w-full grid-cols-2 md:grid-cols-3 lg:grid-cols-6 h-auto gap-1 md:gap-0 md:h-10">
+              <TabsTrigger value="leads" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm px-2 md:px-3">
+                <Users className="h-3 w-3 md:h-4 md:w-4" />
+                <span className="hidden sm:inline">Leads</span>
               </TabsTrigger>
-              <TabsTrigger value="whatsapp" className="flex items-center gap-2">
-                <MessageCircle className="h-4 w-4" />
-                WhatsApp
+              <TabsTrigger value="whatsapp" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm px-2 md:px-3">
+                <MessageCircle className="h-3 w-3 md:h-4 md:w-4" />
+                <span className="hidden sm:inline">WhatsApp</span>
               </TabsTrigger>
-              <TabsTrigger value="n8n" className="flex items-center gap-2">
-                <Webhook className="h-4 w-4" />
-                N8N
+              <TabsTrigger value="n8n" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm px-2 md:px-3">
+                <Webhook className="h-3 w-3 md:h-4 md:w-4" />
+                <span className="hidden sm:inline">N8N</span>
               </TabsTrigger>
-              <TabsTrigger value="analytics" className="flex items-center gap-2">
-                <BarChart3 className="h-4 w-4" />
-                Analytics
+              <TabsTrigger value="analytics" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm px-2 md:px-3">
+                <BarChart3 className="h-3 w-3 md:h-4 md:w-4" />
+                <span className="hidden sm:inline">Analytics</span>
               </TabsTrigger>
-              <TabsTrigger value="automations" className="flex items-center gap-2">
-                <Activity className="h-4 w-4" />
-                Automações
+              <TabsTrigger value="automations" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm px-2 md:px-3">
+                <Activity className="h-3 w-3 md:h-4 md:w-4" />
+                <span className="hidden sm:inline">Automações</span>
               </TabsTrigger>
-              <TabsTrigger value="general" className="flex items-center gap-2">
-                <Settings className="h-4 w-4" />
-                Geral
+              <TabsTrigger value="general" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm px-2 md:px-3">
+                <Settings className="h-3 w-3 md:h-4 md:w-4" />
+                <span className="hidden sm:inline">Geral</span>
               </TabsTrigger>
             </TabsList>
 
@@ -129,49 +152,59 @@ const AdminConfig = () => {
                     Configure Google Analytics, Facebook Pixel e GTM para rastrear conversões
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="ga-id">Google Analytics ID</Label>
-                    <Input
-                      id="ga-id"
-                      placeholder="G-XXXXXXXXXX"
-                      value={trackingSettings.googleAnalytics || ''}
-                      onChange={(e) => setTrackingSettings({
-                        ...trackingSettings,
-                        googleAnalytics: e.target.value
-                      })}
-                    />
+                <CardContent>
+                  <div className="grid gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="ga-id">Google Analytics ID</Label>
+                        <Input
+                          id="ga-id"
+                          placeholder="G-XXXXXXXXXX"
+                          value={trackingSettings.googleAnalytics || ''}
+                          onChange={(e) => setTrackingSettings({
+                            ...trackingSettings,
+                            googleAnalytics: e.target.value
+                          })}
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="fb-pixel">Facebook Pixel ID</Label>
+                        <Input
+                          id="fb-pixel"
+                          placeholder="123456789012345"
+                          value={trackingSettings.facebookPixel || ''}
+                          onChange={(e) => setTrackingSettings({
+                            ...trackingSettings,
+                            facebookPixel: e.target.value
+                          })}
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="gtm-id">Google Tag Manager ID</Label>
+                        <Input
+                          id="gtm-id"
+                          placeholder="GTM-XXXXXXX"
+                          value={trackingSettings.gtmId || ''}
+                          onChange={(e) => setTrackingSettings({
+                            ...trackingSettings,
+                            gtmId: e.target.value
+                          })}
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="flex justify-start">
+                      <Button 
+                        onClick={handleSaveTracking}
+                        disabled={isSaving || updateSettings.isPending}
+                        className="min-w-[140px]"
+                      >
+                        {isSaving || updateSettings.isPending ? 'Salvando...' : 'Salvar Configurações'}
+                      </Button>
+                    </div>
                   </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="fb-pixel">Facebook Pixel ID</Label>
-                    <Input
-                      id="fb-pixel"
-                      placeholder="123456789012345"
-                      value={trackingSettings.facebookPixel || ''}
-                      onChange={(e) => setTrackingSettings({
-                        ...trackingSettings,
-                        facebookPixel: e.target.value
-                      })}
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="gtm-id">Google Tag Manager ID</Label>
-                    <Input
-                      id="gtm-id"
-                      placeholder="GTM-XXXXXXX"
-                      value={trackingSettings.gtmId || ''}
-                      onChange={(e) => setTrackingSettings({
-                        ...trackingSettings,
-                        gtmId: e.target.value
-                      })}
-                    />
-                  </div>
-                  
-                  <Button onClick={handleSaveTracking}>
-                    Salvar Configurações
-                  </Button>
                 </CardContent>
               </Card>
             </TabsContent>

@@ -2,6 +2,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { SiteSettings } from '@/types/property';
+import { useEffect } from 'react';
 
 export const useSupabaseSettings = () => {
   const queryClient = useQueryClient();
@@ -64,6 +65,28 @@ export const useSupabaseSettings = () => {
       queryClient.invalidateQueries({ queryKey: ['site-settings'] });
     }
   });
+
+  // Sync with localStorage for backward compatibility
+  useEffect(() => {
+    if (settings && !isLoading) {
+      try {
+        localStorage.setItem('site-settings', JSON.stringify({
+          companyName: settings.companyName,
+          logo: settings.logo,
+          logoDark: settings.logoDark,
+          primaryColor: settings.primaryColor,
+          secondaryColor: settings.secondaryColor,
+          contactEmail: settings.contactEmail,
+          contactPhone: settings.contactPhone,
+          address: settings.address,
+          socialMedia: settings.socialMedia,
+          tracking: settings.tracking
+        }));
+      } catch (error) {
+        console.error('Error syncing settings to localStorage:', error);
+      }
+    }
+  }, [settings, isLoading]);
 
   return {
     settings,

@@ -4,6 +4,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "@/hooks/useAuth";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer";
 import Home from "./pages/Home";
@@ -11,32 +13,71 @@ import Properties from "./pages/Properties";
 import PropertyDetail from "./pages/PropertyDetail";
 import Admin from "./pages/Admin";
 import AdminConfig from "./pages/AdminConfig";
+import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <div className="min-h-screen flex flex-col">
-          <Header />
-          <main className="flex-1">
+    <AuthProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <div className="min-h-screen flex flex-col">
             <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/imoveis" element={<Properties />} />
-              <Route path="/imovel/:id" element={<PropertyDetail />} />
-              <Route path="/admin" element={<Admin />} />
-              <Route path="/admin/config" element={<AdminConfig />} />
+              {/* Public routes */}
+              <Route path="/" element={
+                <>
+                  <Header />
+                  <main className="flex-1">
+                    <Home />
+                  </main>
+                  <Footer />
+                </>
+              } />
+              <Route path="/imoveis" element={
+                <>
+                  <Header />
+                  <main className="flex-1">
+                    <Properties />
+                  </main>
+                  <Footer />
+                </>
+              } />
+              <Route path="/imovel/:id" element={
+                <>
+                  <Header />
+                  <main className="flex-1">
+                    <PropertyDetail />
+                  </main>
+                  <Footer />
+                </>
+              } />
+              
+              {/* Auth route */}
+              <Route path="/auth" element={<Auth />} />
+              
+              {/* Protected admin routes */}
+              <Route path="/admin" element={
+                <ProtectedRoute>
+                  <Admin />
+                </ProtectedRoute>
+              } />
+              <Route path="/admin/config" element={
+                <ProtectedRoute>
+                  <AdminConfig />
+                </ProtectedRoute>
+              } />
+              
+              {/* 404 route */}
               <Route path="*" element={<NotFound />} />
             </Routes>
-          </main>
-          <Footer />
-        </div>
-      </BrowserRouter>
-    </TooltipProvider>
+          </div>
+        </BrowserRouter>
+      </TooltipProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 
