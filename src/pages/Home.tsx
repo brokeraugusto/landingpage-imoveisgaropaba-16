@@ -1,14 +1,22 @@
-
 import { Link } from 'react-router-dom';
 import { Search, Star, Users, Award } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import PropertyCard from '@/components/PropertyCard';
-import ContactForm from '@/components/ContactForm';
+import ContactFormEnhanced from '@/components/ContactFormEnhanced';
+import FinancingCalculator from '@/components/FinancingCalculator';
+import LeadCapturePopup from '@/components/LeadCapturePopup';
 import { mockProperties } from '@/data/mockData';
+import { useAnalytics } from '@/hooks/useAnalytics';
+import { useEffect } from 'react';
 
 const Home = () => {
   const featuredProperties = mockProperties.filter(p => p.featured);
+  const { trackPageView } = useAnalytics();
+
+  useEffect(() => {
+    trackPageView('home');
+  }, [trackPageView]);
 
   return (
     <div className="min-h-screen">
@@ -96,6 +104,17 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Financing Calculator Section */}
+      <section className="py-16 bg-blue-50">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-gray-800 mb-4">Simule seu Financiamento</h2>
+            <p className="text-gray-600 text-lg">Descubra o valor das parcelas do seu futuro imóvel</p>
+          </div>
+          <FinancingCalculator />
+        </div>
+      </section>
+
       {/* About Section */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
@@ -166,14 +185,32 @@ const Home = () => {
                     <p className="text-gray-600">contato@premiumimoveis.com.br</p>
                   </div>
                 </div>
+                <div className="flex items-center">
+                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                    <span className="text-green-600 text-lg">💬</span>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-800">WhatsApp</h4>
+                    <p className="text-gray-600">Resposta em até 30 minutos</p>
+                  </div>
+                </div>
               </div>
             </div>
             <div className="animate-scale-in">
-              <ContactForm title="Solicite Informações" />
+              <ContactFormEnhanced title="Solicite Informações" />
             </div>
           </div>
         </div>
       </section>
+
+      {/* Lead Capture Popup */}
+      <LeadCapturePopup 
+        trigger="time" 
+        delay={45000}
+        title="Não Perca as Melhores Oportunidades!"
+        description="Receba primeiro os imóveis que combinam com seu perfil"
+        offer="Consultoria Gratuita + Lista VIP de Imóveis"
+      />
     </div>
   );
 };

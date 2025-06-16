@@ -10,6 +10,7 @@ import Home from "./pages/Home";
 import Properties from "./pages/Properties";
 import PropertyDetail from "./pages/PropertyDetail";
 import Admin from "./pages/Admin";
+import AdminConfig from "./pages/AdminConfig";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
               <Route path="/imoveis" element={<Properties />} />
               <Route path="/imovel/:id" element={<PropertyDetail />} />
               <Route path="/admin" element={<Admin />} />
+              <Route path="/admin/config" element={<AdminConfig />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
