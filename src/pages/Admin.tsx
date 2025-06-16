@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Plus, Edit, Trash2, Settings, BarChart3, Users, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -8,8 +7,9 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
+import ImageUpload from '@/components/ImageUpload';
 import { mockProperties } from '@/data/mockData';
 import { Property } from '@/types/property';
 
@@ -17,6 +17,7 @@ const Admin = () => {
   const [properties, setProperties] = useState(mockProperties);
   const [editingProperty, setEditingProperty] = useState<Property | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [formImages, setFormImages] = useState<string[]>([]);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -31,12 +32,20 @@ const Admin = () => {
 
   const handleEditProperty = (property: Property) => {
     setEditingProperty(property);
+    setFormImages(property.images);
     setIsDialogOpen(true);
   };
 
   const handleAddProperty = () => {
     setEditingProperty(null);
+    setFormImages([]);
     setIsDialogOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setIsDialogOpen(false);
+    setEditingProperty(null);
+    setFormImages([]);
   };
 
   return (
@@ -246,132 +255,136 @@ const Admin = () => {
       </div>
 
       {/* Property Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+      <Dialog open={isDialogOpen} onOpenChange={handleDialogClose}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {editingProperty ? 'Editar Imóvel' : 'Novo Imóvel'}
             </DialogTitle>
           </DialogHeader>
-          <form className="space-y-4">
-            <div>
-              <Label htmlFor="title">Título</Label>
-              <Input
-                id="title"
-                defaultValue={editingProperty?.title || ''}
-                placeholder="Ex: Apartamento Moderno no Centro"
-              />
-            </div>
-            <div>
-              <Label htmlFor="description">Descrição</Label>
-              <Textarea
-                id="description"
-                rows={3}
-                defaultValue={editingProperty?.description || ''}
-                placeholder="Descreva o imóvel..."
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
+          <form className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="title">Título</Label>
+                  <Input
+                    id="title"
+                    defaultValue={editingProperty?.title || ''}
+                    placeholder="Ex: Apartamento Moderno no Centro"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="description">Descrição</Label>
+                  <Textarea
+                    id="description"
+                    rows={4}
+                    defaultValue={editingProperty?.description || ''}
+                    placeholder="Descreva o imóvel..."
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="price">Preço (R$)</Label>
+                    <Input
+                      id="price"
+                      type="number"
+                      defaultValue={editingProperty?.price || ''}
+                      placeholder="850000"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="location">Localização</Label>
+                    <Input
+                      id="location"
+                      defaultValue={editingProperty?.location || ''}
+                      placeholder="Centro, São Paulo - SP"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <Label htmlFor="bedrooms">Quartos</Label>
+                    <Input
+                      id="bedrooms"
+                      type="number"
+                      defaultValue={editingProperty?.bedrooms || ''}
+                      placeholder="3"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="bathrooms">Banheiros</Label>
+                    <Input
+                      id="bathrooms"
+                      type="number"
+                      defaultValue={editingProperty?.bathrooms || ''}
+                      placeholder="2"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="area">Área (m²)</Label>
+                    <Input
+                      id="area"
+                      type="number"
+                      defaultValue={editingProperty?.area || ''}
+                      placeholder="120"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="type">Tipo</Label>
+                    <Select defaultValue={editingProperty?.type || 'apartment'}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="apartment">Apartamento</SelectItem>
+                        <SelectItem value="house">Casa</SelectItem>
+                        <SelectItem value="commercial">Comercial</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="status">Status</Label>
+                    <Select defaultValue={editingProperty?.status || 'for-sale'}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="for-sale">À Venda</SelectItem>
+                        <SelectItem value="for-rent">Para Alugar</SelectItem>
+                        <SelectItem value="sold">Vendido</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="video">URL do Vídeo (opcional)</Label>
+                  <Input
+                    id="video"
+                    defaultValue={editingProperty?.video || ''}
+                    placeholder="https://www.youtube.com/embed/..."
+                  />
+                </div>
+              </div>
+              
               <div>
-                <Label htmlFor="price">Preço (R$)</Label>
-                <Input
-                  id="price"
-                  type="number"
-                  defaultValue={editingProperty?.price || ''}
-                  placeholder="850000"
+                <ImageUpload
+                  images={formImages}
+                  onImagesChange={setFormImages}
+                  maxImages={10}
                 />
               </div>
-              <div>
-                <Label htmlFor="location">Localização</Label>
-                <Input
-                  id="location"
-                  defaultValue={editingProperty?.location || ''}
-                  placeholder="Centro, São Paulo - SP"
-                />
-              </div>
             </div>
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <Label htmlFor="bedrooms">Quartos</Label>
-                <Input
-                  id="bedrooms"
-                  type="number"
-                  defaultValue={editingProperty?.bedrooms || ''}
-                  placeholder="3"
-                />
-              </div>
-              <div>
-                <Label htmlFor="bathrooms">Banheiros</Label>
-                <Input
-                  id="bathrooms"
-                  type="number"
-                  defaultValue={editingProperty?.bathrooms || ''}
-                  placeholder="2"
-                />
-              </div>
-              <div>
-                <Label htmlFor="area">Área (m²)</Label>
-                <Input
-                  id="area"
-                  type="number"
-                  defaultValue={editingProperty?.area || ''}
-                  placeholder="120"
-                />
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="type">Tipo</Label>
-                <Select defaultValue={editingProperty?.type || 'apartment'}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="apartment">Apartamento</SelectItem>
-                    <SelectItem value="house">Casa</SelectItem>
-                    <SelectItem value="commercial">Comercial</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="status">Status</Label>
-                <Select defaultValue={editingProperty?.status || 'for-sale'}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="for-sale">À Venda</SelectItem>
-                    <SelectItem value="for-rent">Para Alugar</SelectItem>
-                    <SelectItem value="sold">Vendido</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div>
-              <Label htmlFor="images">URLs das Imagens (uma por linha)</Label>
-              <Textarea
-                id="images"
-                rows={3}
-                defaultValue={editingProperty?.images.join('\n') || ''}
-                placeholder="https://example.com/image1.jpg&#10;https://example.com/image2.jpg"
-              />
-            </div>
-            <div>
-              <Label htmlFor="video">URL do Vídeo (opcional)</Label>
-              <Input
-                id="video"
-                defaultValue={editingProperty?.video || ''}
-                placeholder="https://www.youtube.com/embed/..."
-              />
-            </div>
-            <div className="flex gap-4 pt-4">
+            
+            <div className="flex gap-4 pt-4 border-t">
               <Button type="submit" className="flex-1">
                 {editingProperty ? 'Atualizar' : 'Criar'} Imóvel
               </Button>
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setIsDialogOpen(false)}
+                onClick={handleDialogClose}
               >
                 Cancelar
               </Button>

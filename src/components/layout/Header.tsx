@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Phone, Mail } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const Header = () => {
@@ -19,26 +19,6 @@ const Header = () => {
 
   return (
     <header className="bg-white shadow-lg sticky top-0 z-50">
-      {/* Top bar */}
-      <div className="bg-blue-900 text-white py-2">
-        <div className="container mx-auto px-4 flex justify-between items-center text-sm">
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <Phone size={16} />
-              <span>(11) 99999-9999</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Mail size={16} />
-              <span>contato@premiumimoveis.com.br</span>
-            </div>
-          </div>
-          <Link to="/admin" className="hover:text-yellow-300 transition-colors">
-            Área Administrativa
-          </Link>
-        </div>
-      </div>
-
-      {/* Main navigation */}
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center py-4">
           <Link to="/" className="text-2xl font-bold text-blue-900">
@@ -60,9 +40,14 @@ const Header = () => {
             ))}
           </nav>
 
-          <Button className="hidden md:block bg-yellow-500 hover:bg-yellow-600 text-black font-semibold">
-            Fale Conosco
-          </Button>
+          <div className="hidden md:flex items-center space-x-4">
+            <div className="text-sm text-gray-600">
+              📞 (11) 99999-9999
+            </div>
+            <Button className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold">
+              Fale Conosco
+            </Button>
+          </div>
 
           {/* Mobile menu button */}
           <button
@@ -91,9 +76,14 @@ const Header = () => {
                   {item.label}
                 </Link>
               ))}
-              <Button className="mt-2 bg-yellow-500 hover:bg-yellow-600 text-black font-semibold">
-                Fale Conosco
-              </Button>
+              <div className="pt-2">
+                <div className="text-sm text-gray-600 mb-2">
+                  📞 (11) 99999-9999
+                </div>
+                <Button className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-semibold">
+                  Fale Conosco
+                </Button>
+              </div>
             </nav>
           </div>
         )}
