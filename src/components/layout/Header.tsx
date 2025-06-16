@@ -3,10 +3,12 @@ import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useSettings } from '@/hooks/useSettings';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+  const { settings } = useSettings();
 
   const navItems = [
     { path: '/', label: 'Início' },
@@ -21,8 +23,18 @@ const Header = () => {
     <header className="bg-white shadow-lg sticky top-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center py-4">
-          <Link to="/" className="text-2xl font-bold text-blue-900">
-            Premium Imóveis
+          <Link to="/" className="flex items-center">
+            {settings.logo ? (
+              <img 
+                src={settings.logo} 
+                alt={settings.companyName}
+                className="h-8 max-w-48 object-contain"
+              />
+            ) : (
+              <span className="text-2xl font-bold text-blue-900">
+                {settings.companyName}
+              </span>
+            )}
           </Link>
 
           {/* Desktop Navigation */}
@@ -42,7 +54,7 @@ const Header = () => {
 
           <div className="hidden md:flex items-center space-x-4">
             <div className="text-sm text-gray-600">
-              📞 (11) 99999-9999
+              📞 {settings.contactPhone}
             </div>
             <Button className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold">
               Fale Conosco
@@ -78,7 +90,7 @@ const Header = () => {
               ))}
               <div className="pt-2">
                 <div className="text-sm text-gray-600 mb-2">
-                  📞 (11) 99999-9999
+                  📞 {settings.contactPhone}
                 </div>
                 <Button className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-semibold">
                   Fale Conosco

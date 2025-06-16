@@ -28,6 +28,7 @@ export interface ContactForm {
 export interface SiteSettings {
   companyName: string;
   logo: string;
+  logoDark?: string;
   primaryColor: string;
   secondaryColor: string;
   contactEmail: string;

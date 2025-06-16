@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Plus, Edit, Trash2, Settings, BarChart3, Users, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -9,7 +10,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
+import { toast } from '@/hooks/use-toast';
 import ImageUpload from '@/components/ImageUpload';
+import LogoUpload from '@/components/LogoUpload';
+import { useSettings } from '@/hooks/useSettings';
 import { mockProperties } from '@/data/mockData';
 import { Property } from '@/types/property';
 
@@ -18,6 +22,7 @@ const Admin = () => {
   const [editingProperty, setEditingProperty] = useState<Property | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [formImages, setFormImages] = useState<string[]>([]);
+  const { settings, updateSettings } = useSettings();
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -46,6 +51,58 @@ const Admin = () => {
     setIsDialogOpen(false);
     setEditingProperty(null);
     setFormImages([]);
+  };
+
+  const handleSaveSettings = (formData: FormData) => {
+    const newSettings = {
+      ...settings,
+      companyName: formData.get('company-name') as string,
+      contactEmail: formData.get('contact-email') as string,
+      contactPhone: formData.get('contact-phone') as string,
+      address: formData.get('address') as string,
+      socialMedia: {
+        facebook: formData.get('facebook') as string,
+        instagram: formData.get('instagram') as string,
+        whatsapp: formData.get('whatsapp') as string,
+      }
+    };
+
+    if (updateSettings(newSettings)) {
+      toast({
+        title: "Configurações salvas!",
+        description: "As configurações foram atualizadas com sucesso.",
+      });
+    } else {
+      toast({
+        title: "Erro ao salvar",
+        description: "Ocorreu um erro ao salvar as configurações.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleSaveTracking = (formData: FormData) => {
+    const newSettings = {
+      ...settings,
+      tracking: {
+        googleAnalytics: formData.get('ga-id') as string,
+        facebookPixel: formData.get('fb-pixel') as string,
+        gtmId: formData.get('gtm-id') as string,
+      }
+    };
+
+    if (updateSettings(newSettings)) {
+      toast({
+        title: "Códigos salvos!",
+        description: "Os códigos de rastreamento foram salvos com sucesso.",
+      });
+    } else {
+      toast({
+        title: "Erro ao salvar",
+        description: "Ocorreu um erro ao salvar os códigos.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -205,28 +262,99 @@ const Admin = () => {
 
           {/* Settings Tab */}
           <TabsContent value="settings" className="space-y-6">
+            {/* Logo Configuration */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Logotipos</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <LogoUpload
+                    logo={settings.logo}
+                    onLogoChange={(logo) => updateSettings({ logo })}
+                    label="Logo Principal"
+                  />
+                  <LogoUpload
+                    logo={settings.logoDark || ''}
+                    onLogoChange={(logoDark) => updateSettings({ logoDark })}
+                    label="Logo Dark Mode"
+                    isDark={true}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
             <Card>
               <CardHeader>
                 <CardTitle>Configurações do Site</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="company-name">Nome da Empresa</Label>
-                  <Input id="company-name" defaultValue="Premium Imóveis" />
-                </div>
-                <div>
-                  <Label htmlFor="contact-email">E-mail de Contato</Label>
-                  <Input id="contact-email" type="email" defaultValue="contato@premiumimoveis.com.br" />
-                </div>
-                <div>
-                  <Label htmlFor="contact-phone">Telefone</Label>
-                  <Input id="contact-phone" defaultValue="(11) 99999-9999" />
-                </div>
-                <div>
-                  <Label htmlFor="address">Endereço</Label>
-                  <Textarea id="address" defaultValue="Rua das Flores, 123 - Centro, São Paulo - SP" />
-                </div>
-                <Button>Salvar Configurações</Button>
+              <CardContent>
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSaveSettings(new FormData(e.currentTarget));
+                }} className="space-y-4">
+                  <div>
+                    <Label htmlFor="company-name">Nome da Empresa</Label>
+                    <Input 
+                      id="company-name" 
+                      name="company-name"
+                      defaultValue={settings.companyName} 
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="contact-email">E-mail de Contato</Label>
+                    <Input 
+                      id="contact-email" 
+                      name="contact-email"
+                      type="email" 
+                      defaultValue={settings.contactEmail} 
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="contact-phone">Telefone</Label>
+                    <Input 
+                      id="contact-phone" 
+                      name="contact-phone"
+                      defaultValue={settings.contactPhone} 
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="address">Endereço</Label>
+                    <Textarea 
+                      id="address" 
+                      name="address"
+                      defaultValue={settings.address} 
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="facebook">Facebook</Label>
+                    <Input 
+                      id="facebook" 
+                      name="facebook"
+                      defaultValue={settings.socialMedia.facebook} 
+                      placeholder="https://facebook.com/empresa"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="instagram">Instagram</Label>
+                    <Input 
+                      id="instagram" 
+                      name="instagram"
+                      defaultValue={settings.socialMedia.instagram} 
+                      placeholder="https://instagram.com/empresa"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="whatsapp">WhatsApp</Label>
+                    <Input 
+                      id="whatsapp" 
+                      name="whatsapp"
+                      defaultValue={settings.socialMedia.whatsapp} 
+                      placeholder="5511999999999"
+                    />
+                  </div>
+                  <Button type="submit">Salvar Configurações</Button>
+                </form>
               </CardContent>
             </Card>
 
@@ -234,20 +362,40 @@ const Admin = () => {
               <CardHeader>
                 <CardTitle>Códigos de Rastreamento</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="ga-id">Google Analytics ID</Label>
-                  <Input id="ga-id" placeholder="GA_MEASUREMENT_ID" />
-                </div>
-                <div>
-                  <Label htmlFor="fb-pixel">Facebook Pixel ID</Label>
-                  <Input id="fb-pixel" placeholder="FACEBOOK_PIXEL_ID" />
-                </div>
-                <div>
-                  <Label htmlFor="gtm-id">Google Tag Manager ID</Label>
-                  <Input id="gtm-id" placeholder="GTM-XXXXXXX" />
-                </div>
-                <Button>Salvar Códigos</Button>
+              <CardContent>
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSaveTracking(new FormData(e.currentTarget));
+                }} className="space-y-4">
+                  <div>
+                    <Label htmlFor="ga-id">Google Analytics ID</Label>
+                    <Input 
+                      id="ga-id" 
+                      name="ga-id"
+                      defaultValue={settings.tracking.googleAnalytics}
+                      placeholder="GA_MEASUREMENT_ID" 
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="fb-pixel">Facebook Pixel ID</Label>
+                    <Input 
+                      id="fb-pixel" 
+                      name="fb-pixel"
+                      defaultValue={settings.tracking.facebookPixel}
+                      placeholder="FACEBOOK_PIXEL_ID" 
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="gtm-id">Google Tag Manager ID</Label>
+                    <Input 
+                      id="gtm-id" 
+                      name="gtm-id"
+                      defaultValue={settings.tracking.gtmId}
+                      placeholder="GTM-XXXXXXX" 
+                    />
+                  </div>
+                  <Button type="submit">Salvar Códigos</Button>
+                </form>
               </CardContent>
             </Card>
           </TabsContent>
