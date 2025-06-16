@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, MapPin, Bed, Bath, Square, Calendar, Share2, Heart, Phone, Mail, MessageCircle } from 'lucide-react';
@@ -28,8 +27,8 @@ const PropertyDetail = () => {
   useEffect(() => {
     if (property) {
       // Google Analytics tracking
-      if (typeof gtag !== 'undefined') {
-        gtag('event', 'page_view', {
+      if (typeof window !== 'undefined' && window.gtag) {
+        window.gtag('event', 'page_view', {
           page_title: property.title,
           page_location: window.location.href,
           content_group1: 'Property Detail',
@@ -42,8 +41,8 @@ const PropertyDetail = () => {
       }
 
       // Facebook Pixel tracking
-      if (typeof fbq !== 'undefined') {
-        fbq('track', 'ViewContent', {
+      if (typeof window !== 'undefined' && window.fbq) {
+        window.fbq('track', 'ViewContent', {
           content_type: 'property',
           content_ids: [property.id],
           content_name: property.title,
@@ -80,16 +79,16 @@ const PropertyDetail = () => {
 
   const handleContactClick = (action: string) => {
     // Track conversion events
-    if (typeof gtag !== 'undefined') {
-      gtag('event', 'contact_initiated', {
+    if (typeof window !== 'undefined' && window.gtag) {
+      window.gtag('event', 'contact_initiated', {
         event_category: 'Lead Generation',
         event_label: action,
         property_id: property.id
       });
     }
 
-    if (typeof fbq !== 'undefined') {
-      fbq('track', 'Lead', {
+    if (typeof window !== 'undefined' && window.fbq) {
+      window.fbq('track', 'Lead', {
         content_name: property.title,
         content_category: action,
         value: property.price,
@@ -292,7 +291,6 @@ const PropertyDetail = () => {
             <ContactForm 
               propertyId={property.id}
               title="Tenho Interesse"
-              onSubmit={() => handleContactClick('Form')}
             />
 
             {/* Quick Contact */}
