@@ -23,9 +23,11 @@ export interface ContactForm {
   phone: string;
   message: string;
   propertyId?: string;
+  propertyTitle?: string;
 }
 
 export interface SiteSettings {
+  id?: string;
   companyName: string;
   logo: string;
   logoDark?: string;

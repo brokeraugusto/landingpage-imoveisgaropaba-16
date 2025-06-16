@@ -74,7 +74,13 @@ export const useN8N = () => {
     try {
       const { data, error } = await supabase
         .from('n8n_webhooks')
-        .insert(webhook)
+        .insert({
+          name: webhook.name,
+          webhook_url: webhook.webhookUrl,
+          event_type: webhook.eventType,
+          active: webhook.active,
+          config: webhook.config || {}
+        })
         .select()
         .single();
 

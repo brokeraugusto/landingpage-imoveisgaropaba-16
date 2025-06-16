@@ -17,6 +17,7 @@ export const useSupabaseSettings = () => {
       if (error) throw error;
       
       return {
+        id: data.id,
         companyName: data.company_name,
         logo: data.logo || '',
         logoDark: data.logo_dark || '',
@@ -29,12 +30,14 @@ export const useSupabaseSettings = () => {
         tracking: data.tracking || {},
         evolutionApi: data.evolution_api || {},
         n8nConfig: data.n8n_config || {}
-      } as SiteSettings & { evolutionApi: any; n8nConfig: any };
+      } as SiteSettings & { id: string; evolutionApi: any; n8nConfig: any };
     }
   });
 
   const updateSettings = useMutation({
     mutationFn: async (newSettings: Partial<SiteSettings>) => {
+      if (!settings?.id) throw new Error('Settings ID not found');
+      
       const { data, error } = await supabase
         .from('site_settings')
         .update({
@@ -50,7 +53,7 @@ export const useSupabaseSettings = () => {
           tracking: newSettings.tracking,
           updated_at: new Date().toISOString()
         })
-        .eq('id', settings?.id)
+        .eq('id', settings.id)
         .select()
         .single();
 

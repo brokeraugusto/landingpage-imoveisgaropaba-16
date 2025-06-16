@@ -290,7 +290,7 @@ const PropertyDetail = () => {
           <div className="space-y-6">
             <ContactForm 
               propertyId={property.id}
-              title="Tenho Interesse"
+              propertyTitle={property.title}
             />
 
             {/* Quick Contact */}
