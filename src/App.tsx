@@ -59,14 +59,14 @@ const App = () => (
               {/* Auth route */}
               <Route path="/auth" element={<Auth />} />
               
-              {/* Protected admin routes */}
+              {/* Protected admin routes - require admin role */}
               <Route path="/admin" element={
-                <ProtectedRoute>
+                <ProtectedRoute adminOnly={true}>
                   <Admin />
                 </ProtectedRoute>
               } />
               <Route path="/admin/config" element={
-                <ProtectedRoute>
+                <ProtectedRoute adminOnly={true}>
                   <AdminConfig />
                 </ProtectedRoute>
               } />

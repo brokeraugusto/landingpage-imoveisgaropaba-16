@@ -5,10 +5,11 @@ import { useAuth } from '@/hooks/useAuth';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
+  adminOnly?: boolean;
 }
 
-const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const { user, loading } = useAuth();
+const ProtectedRoute = ({ children, adminOnly = false }: ProtectedRouteProps) => {
+  const { user, profile, loading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -21,6 +22,13 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
       });
     }
   }, [user, loading, navigate, location]);
+
+  useEffect(() => {
+    if (!loading && user && profile && adminOnly && profile.role !== 'admin') {
+      // Redirect non-admin users away from admin-only routes
+      navigate('/', { replace: true });
+    }
+  }, [user, profile, loading, adminOnly, navigate]);
 
   if (loading) {
     return (
@@ -35,6 +43,23 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
 
   if (!user) {
     return null; // Will redirect
+  }
+
+  if (adminOnly && profile?.role !== 'admin') {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">Acesso Negado</h2>
+          <p className="text-gray-600 mb-4">Você não tem permissão para acessar esta área.</p>
+          <button 
+            onClick={() => navigate('/')}
+            className="text-blue-600 hover:text-blue-700 font-semibold"
+          >
+            ← Voltar ao início
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return <>{children}</>;

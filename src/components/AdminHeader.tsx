@@ -6,7 +6,7 @@ import { toast } from '@/components/ui/use-toast';
 import { Link } from 'react-router-dom';
 
 const AdminHeader = () => {
-  const { user, signOut } = useAuth();
+  const { user, profile, signOut } = useAuth();
 
   const handleSignOut = async () => {
     try {
@@ -41,7 +41,12 @@ const AdminHeader = () => {
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <User className="h-4 w-4" />
-              <span>{user?.email}</span>
+              <span>{profile?.full_name || user?.email}</span>
+              {profile?.role === 'admin' && (
+                <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                  Admin
+                </span>
+              )}
             </div>
             <Button
               variant="outline"
