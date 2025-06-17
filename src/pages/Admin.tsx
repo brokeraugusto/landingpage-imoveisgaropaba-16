@@ -11,7 +11,8 @@ import {
   Home,
   TrendingUp,
   Database,
-  Webhook
+  Webhook,
+  Building
 } from 'lucide-react';
 
 const Admin = () => {
@@ -35,29 +36,55 @@ const Admin = () => {
               <CardHeader className="pb-3">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-blue-100 rounded-lg">
-                    <Settings className="h-6 w-6 text-blue-600" />
+                    <Building className="h-6 w-6 text-blue-600" />
                   </div>
                   <div>
-                    <CardTitle className="text-lg">Configurações</CardTitle>
+                    <CardTitle className="text-lg">Gestão de Imóveis</CardTitle>
                     <CardDescription className="text-sm">
-                      Sistema completo de configurações
+                      Cadastre e gerencie imóveis
                     </CardDescription>
                   </div>
                 </div>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-gray-600 mb-4">
-                  Configure integrações, analytics, automações e muito mais.
+                  Cadastre novos imóveis, edite informações e gerencie seu portfólio.
                 </p>
-                <Link to="/admin/config">
+                <Link to="/admin/properties">
                   <Button className="w-full">
-                    Acessar Configurações
+                    Gerenciar Imóveis
                   </Button>
                 </Link>
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-lg transition-shadow">
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+              <CardHeader className="pb-3">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-purple-100 rounded-lg">
+                    <Settings className="h-6 w-6 text-purple-600" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-lg">Configurações da Empresa</CardTitle>
+                    <CardDescription className="text-sm">
+                      Personalize sua imobiliária
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-gray-600 mb-4">
+                  Configure logo, cores, contatos e personalize a landing page.
+                </p>
+                <Link to="/admin/settings">
+                  <Button className="w-full">
+                    Personalizar
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
               <CardHeader className="pb-3">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-green-100 rounded-lg">
@@ -86,8 +113,8 @@ const Admin = () => {
             <Card className="hover:shadow-lg transition-shadow">
               <CardHeader className="pb-3">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-purple-100 rounded-lg">
-                    <BarChart3 className="h-6 w-6 text-purple-600" />
+                  <div className="p-2 bg-orange-100 rounded-lg">
+                    <BarChart3 className="h-6 w-6 text-orange-600" />
                   </div>
                   <div>
                     <CardTitle className="text-lg">Analytics</CardTitle>
@@ -112,8 +139,8 @@ const Admin = () => {
             <Card className="hover:shadow-lg transition-shadow">
               <CardHeader className="pb-3">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-orange-100 rounded-lg">
-                    <MessageCircle className="h-6 w-6 text-orange-600" />
+                  <div className="p-2 bg-yellow-100 rounded-lg">
+                    <MessageCircle className="h-6 w-6 text-yellow-600" />
                   </div>
                   <div>
                     <CardTitle className="text-lg">WhatsApp</CardTitle>
@@ -182,6 +209,32 @@ const Admin = () => {
                 <Link to="/">
                   <Button variant="outline" className="w-full">
                     Ir para o Site
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+              <CardHeader className="pb-3">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-teal-100 rounded-lg">
+                    <Database className="h-6 w-6 text-teal-600" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-lg">Configurações Avançadas</CardTitle>
+                    <CardDescription className="text-sm">
+                      Sistema completo de configurações
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-gray-600 mb-4">
+                  Configure integrações, analytics, automações e muito mais.
+                </p>
+                <Link to="/admin/config">
+                  <Button variant="outline" className="w-full">
+                    Acessar Configurações
                   </Button>
                 </Link>
               </CardContent>

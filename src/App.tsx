@@ -12,6 +12,8 @@ import Home from "./pages/Home";
 import Properties from "./pages/Properties";
 import PropertyDetail from "./pages/PropertyDetail";
 import Admin from "./pages/Admin";
+import AdminProperties from "./pages/AdminProperties";
+import AdminSettings from "./pages/AdminSettings";
 import AdminConfig from "./pages/AdminConfig";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
@@ -63,6 +65,16 @@ const App = () => (
               <Route path="/admin" element={
                 <ProtectedRoute adminOnly={true}>
                   <Admin />
+                </ProtectedRoute>
+              } />
+              <Route path="/admin/properties" element={
+                <ProtectedRoute adminOnly={true}>
+                  <AdminProperties />
+                </ProtectedRoute>
+              } />
+              <Route path="/admin/settings" element={
+                <ProtectedRoute adminOnly={true}>
+                  <AdminSettings />
                 </ProtectedRoute>
               } />
               <Route path="/admin/config" element={
